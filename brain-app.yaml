@@ -1,0 +1,25 @@
+dialect: brain-app/v1
+id: thread-digest
+name: Thread Digest
+version: 0.1.0
+description: "Paste a long conversation and get its decisions, open questions and next steps."
+license: MIT
+author:
+  name: Gregory German
+  contact: gregorygerman777@gmail.com
+  url: https://github.com/gregorygerman777-hub
+repo: https://github.com/gregorygerman777-hub/brain-app-thread-digest
+tab:
+  label: Digest
+  route: /digest
+  order: 120
+entries:
+  ui_bundle: dist
+requires_layers:
+  - layer: episodic
+    mode: read
+  - layer: semantic
+    mode: append
+permissions:
+  - llm.invoke
+  - memory.write
