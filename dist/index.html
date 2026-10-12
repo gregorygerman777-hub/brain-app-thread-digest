@@ -4,33 +4,37 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Thread Digest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Lora:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0e0c0b;--panel:#171412;--line:#2a2420;--text:#e8e0d5;--muted:#8a7d6e;--accent:#c9a96e;--ok:#7fc99c;--err:#e07a6a}
-@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--bg:#f7f3ec;--panel:#fffdf9;--line:#e2d9cc;--text:#2a2420;--muted:#7a6d5e;--accent:#8a6a2e;--ok:#2f7d4f;--err:#b5452f}}
+:root{--bg:#0e0c0b;--surface:#161310;--surface2:#1c1814;--text:#e8e0d5;--muted:#8a7d6e;--accent:#c9a96e;--border:#2a2420;--ok:#7fc99c;--err:#e07a6a;--font-body:system-ui,-apple-system,sans-serif;--font-display:Lora,Georgia,serif;--font-mono:"DM Mono",ui-monospace,monospace}
+@media (prefers-color-scheme: light){:root:not([data-synced]){--bg:#f4ede0;--surface:#ebe2d2;--surface2:#e0d6c2;--text:#1a1812;--muted:#6b5f52;--accent:#8a6e3c;--border:#c9b896;--ok:#2f7d4f;--err:#b5452f}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 var(--font-body)}
 main{max-width:760px;margin:0 auto;padding:32px 16px 64px}
-h1{font-size:24px;margin:0 0 8px;font-weight:600}
+h1{font-family:var(--font-display);font-size:28px;margin:0 0 8px;font-weight:600}
 p.lead{color:var(--muted);margin:0 0 24px}
-label{display:block;font-size:13px;color:var(--muted);margin:16px 0 8px}
-input,select,textarea{width:100%;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font:inherit}
+label{display:block;font-family:var(--font-mono);font-size:12px;color:var(--muted);margin:16px 0 8px;letter-spacing:.02em}
+input,select,textarea{width:100%;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font:inherit}
 textarea{min-height:160px;resize:vertical}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
-button{background:transparent;color:var(--accent);border:1px solid var(--accent);border-radius:8px;padding:8px 16px;font:inherit;cursor:pointer}
+button{background:transparent;color:var(--accent);border:1px solid var(--accent);border-radius:8px;padding:8px 16px;font-family:var(--font-mono);font-size:13px;cursor:pointer}
 button.primary{background:var(--accent);color:var(--bg)}
 button:disabled{opacity:.5;cursor:default}
 .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;align-items:center}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px;margin-top:16px}
-.status{font-size:13px;color:var(--muted);min-height:24px;margin-top:8px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;margin-top:16px}
+.status{font-family:var(--font-mono);font-size:12px;color:var(--muted);min-height:24px;margin-top:8px}
 .status.ok{color:var(--ok)}.status.err{color:var(--err)}
 .out{white-space:pre-wrap}
-.sources{font-size:13px;color:var(--muted);margin-top:8px}
+.sources{font-family:var(--font-mono);font-size:12px;color:var(--muted);margin-top:8px}
 ul.plain{list-style:none;padding:0;margin:0}
-ul.plain li{border-top:1px solid var(--line);padding:8px 0}
+ul.plain li{border-top:1px solid var(--border);padding:8px 0}
 .muted{color:var(--muted)}
 table{width:100%;border-collapse:collapse;font-size:14px}
-th,td{text-align:left;padding:8px;border-top:1px solid var(--line)}
+th{font-family:var(--font-mono);font-size:12px;color:var(--muted);font-weight:500}
+th,td{text-align:left;padding:8px;border-top:1px solid var(--border)}
 </style>
 </head>
 <body>
@@ -46,6 +50,23 @@ th,td{text-align:left;padding:8px;border-top:1px solid var(--line)}
 <div class="card out" id="out" hidden></div>
 </main>
 <script>
+// Follow the console's theme and fonts (same-origin iframe), live.
+(function () {
+  const KEYS = ['--bg', '--surface', '--surface2', '--text', '--muted', '--accent', '--border', '--font-body', '--font-display', '--font-mono'];
+  function apply() {
+    try {
+      const cs = getComputedStyle(window.parent.document.documentElement);
+      const root = document.documentElement;
+      let got = false;
+      KEYS.forEach((k) => { const v = cs.getPropertyValue(k).trim(); if (v) { root.style.setProperty(k, v); got = true; } });
+      if (got) root.dataset.synced = '1';
+    } catch {}
+  }
+  if (window.parent !== window) {
+    apply();
+    try { new MutationObserver(apply).observe(window.parent.document.documentElement, { attributes: true }); } catch {}
+  }
+})();
 const Brain = (() => {
   let n = 0;
   const pending = new Map();
