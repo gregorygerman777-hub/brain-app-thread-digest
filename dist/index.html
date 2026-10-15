@@ -46,7 +46,7 @@ th,td{text-align:left;padding:8px;border-top:1px solid var(--border)}
 <label for="thread">Conversation</label>
 <textarea id="thread" style="min-height:240px" placeholder="Paste the thread here"></textarea>
 <div class="row"><button class="primary" id="go">Make digest</button><button id="keep" disabled>Save digest to memory</button></div>
-<div class="status" id="status"></div>
+<div class="status" id="status" role="status" aria-live="polite"></div>
 <div class="card out" id="out" hidden></div>
 </main>
 <script>
