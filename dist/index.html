@@ -76,7 +76,8 @@ const Brain = (() => {
     if (e.origin !== location.origin) return;
     const m = e.data;
     if (!m || m.type !== 'reply' || !pending.has(m.request_id)) return;
-    const { resolve, reject } = pending.get(m.request_id);
+    const { resolve, reject, timer } = pending.get(m.request_id);
+    clearTimeout(timer);
     pending.delete(m.request_id);
     m.ok ? resolve(m.result) : reject(m.error || { code: 'unknown' });
   });
@@ -87,7 +88,11 @@ const Brain = (() => {
         return;
       }
       const id = 'r' + (++n) + '-' + Date.now();
-      pending.set(id, { resolve, reject });
+      const timer = setTimeout(() => {
+        if (!pending.delete(id)) return;
+        reject({ code: 'timeout', detail: 'Your brain did not answer in time. Try again.' });
+      }, type === 'llm.complete' ? 180000 : 30000);
+      pending.set(id, { resolve, reject, timer });
       window.parent.postMessage({ type, payload, request_id: id }, location.origin);
     });
   }
